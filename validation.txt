@@ -1,7 +1,12 @@
-PASS: all three baseline returns, volatilities and reserve weights match.
-PASS: symmetric correlation 0.50 gives benchmark volatility 11.00%.
-PASS: out of range input rejected: Correlation [2][3] must be between -1 and 1.
-PASS: asymmetric input rejected: Correlation table must be symmetric: [2][3].
-PASS: original mandate A-C match; D remains 100% cash and passes; E fails only reserve (0.0% versus 3.0%).
-PASS: only change to original mandate.py is the candidate E addition.
-PASS: original correlation inputs remain 0.25; probes changed copies only.
+PASS: Lab 14 command output remains byte-for-byte unchanged.
+PASS: Meridian baseline and equity stress match; largest change is 25 points.
+PASS: Engine correlation probe returns 0/40/0/60 and 9.73% volatility.
+PASS: Infeasible objective returns None; grid enumerates all 1,771 four-asset mixes.
+PASS: 60- and 36-return estimates agree with independent NumPy calculations.
+PASS: CSV duplicate month rejected.
+PASS: Streamlit Meridian page loads and editing equity to 7% displays a 25-point change.
+PASS: App responds to engine correlation changes; saved inputs restored.
+PASS: Self-review VT estimate reduction updates app allocation by 5 points.
+PASS: Streamlit fund page, 36-month switch and infeasible-objective warning work.
+PASS: all 244 saved price cells match raw Yahoo adjusted prices.
+PASS: actual Streamlit server started and health endpoint returned ok; server stopped after test.

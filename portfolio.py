@@ -110,5 +110,101 @@ def main():
         raise SystemExit(f"Cannot run: {error}") from error
 
 
+def weight_grid(count, units=20):
+    """All long-only allocations summing to 100%, in 5-percentage-point steps."""
+    def distribute(slots, remaining, prefix):
+        if slots == 1:
+            yield [(x / units) for x in (*prefix, remaining)]
+        else:
+            for value in range(remaining + 1):
+                yield from distribute(slots - 1, remaining - value, (*prefix, value))
+    if not 3 <= count <= 6:
+        raise ValueError("Use three to six assets.")
+    yield from distribute(count, units, ())
+
+
+def search_portfolios(assets, correlations, objective, minimum_reserve):
+    """Return the lowest-volatility feasible grid allocation, or None."""
+    if not math.isfinite(objective) or not math.isfinite(minimum_reserve) or not 0 <= minimum_reserve <= 1:
+        raise ValueError("Use a finite objective and a reserve minimum between 0 and 100%.")
+    covariance = covariance_matrix(assets, correlations)
+    best = None
+    for weights in weight_grid(len(assets)):
+        ret = expected_return(weights, assets)
+        reserve = reserve_weight(weights, assets)
+        if not meets_objective(ret, objective) or reserve + 1e-12 < minimum_reserve:
+            continue
+        volatility = portfolio_volatility(weights, covariance)
+        if best is None or volatility < best['volatility'] - 1e-12:
+            best = dict(weights=weights, expected_return=ret, volatility=volatility, reserve=reserve)
+    return best
+
+
+def estimate_from_csv(source, last_36=False, reserve_tickers=('BIL',)):
+    """Estimate from monthly adjusted prices; source is a path or text stream.
+
+    Annualization: arithmetic monthly mean * 12; sample stdev * sqrt(12).
+    The last-36 switch selects 36 RETURNS (therefore needs 37 prices).
+    """
+    import csv
+    import statistics
+    from datetime import date
+    from pathlib import Path
+    if isinstance(source, (str, Path)):
+        with open(source, encoding='utf-8-sig', newline='') as stream:
+            return estimate_from_csv(stream, last_36, reserve_tickers)
+    reader = csv.reader(source)
+    try:
+        header = next(reader)
+    except StopIteration:
+        raise ValueError('CSV is empty.') from None
+    tickers = [x.strip().upper() for x in header[1:]]
+    if not 3 <= len(tickers) <= 6 or len(set(tickers)) != len(tickers) or any(not x for x in tickers):
+        raise ValueError('CSV needs Date followed by three to six unique ticker columns.')
+    dates, prices = [], []
+    for number, row in enumerate(reader, 2):
+        if not row or not any(cell.strip() for cell in row):
+            continue
+        try:
+            if len(row) != len(header):
+                raise ValueError('wrong column count')
+            day = date.fromisoformat(row[0].strip())
+            values = [float(cell) for cell in row[1:]]
+            if any(not math.isfinite(v) or v <= 0 for v in values):
+                raise ValueError('prices must be finite and positive')
+            if dates:
+                previous = dates[-1]
+                if (day.year * 12 + day.month) != (previous.year * 12 + previous.month + 1):
+                    raise ValueError('dates must be consecutive months in ascending order')
+        except (ValueError, IndexError) as error:
+            raise ValueError(f'CSV row {number}: {error}') from error
+        dates.append(day)
+        prices.append(values)
+    if len(prices) < 37:
+        raise ValueError('Provide at least 37 monthly prices for 36 monthly returns.')
+    returns = [[new[i] / old[i] - 1 for i in range(len(tickers))]
+               for old, new in zip(prices, prices[1:])]
+    used = returns[-36:] if last_36 else returns
+    columns = list(zip(*used))
+    means = [statistics.mean(column) for column in columns]
+    deviations = [statistics.stdev(column) for column in columns]
+    if any(value <= 0 for value in deviations):
+        raise ValueError('Each ticker needs nonzero return variation to estimate correlation.')
+    correlations = [[max(-1.0, min(1.0, statistics.correlation(a, b))) for b in columns] for a in columns]
+    assets = [dict(name=ticker, return_type='estimate', volatility=sd * math.sqrt(12),
+                   reserve=ticker in reserve_tickers, **{'return': mean * 12})
+              for ticker, mean, sd in zip(tickers, means, deviations)]
+    validate_inputs(assets, correlations)
+    return dict(assets=assets, correlations=correlations, observations=len(used),
+                first_return=str(dates[-len(used)]), last_return=str(dates[-1]),
+                first_price=str(dates[0]), price_count=len(prices))
+
+
+def largest_weight_change(first, second):
+    if first is None or second is None:
+        return None
+    return max(abs(a - b) for a, b in zip(first['weights'], second['weights'])) * 100
+
+
 if __name__ == "__main__":
     main()
