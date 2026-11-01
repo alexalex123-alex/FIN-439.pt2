@@ -1,0 +1,65 @@
+Lab 16 fictional training data | Decision date: 2026-03-31
+Input rows: 12
+Quarantined: missing ticker: 1 row(s); row IDs: 11
+Removed: exact duplicate: 1 row(s); row IDs: 7
+Removed: publication after cutoff: 3 row(s); row IDs: 3, 8, 10
+Removed: superseded vintage: 1 row(s); row IDs: 2
+As-of panel: 6 row(s); row IDs: 1, 4, 5, 6, 9, 12
+
+AS-OF PANEL
+Row | Ticker | Month | Published | Price
+1 | AAA | 2026-01 | 2026-02-10 | 101.0
+4 | AAA | 2026-02 | 2026-03-25 | 103.0
+5 | BBB | 2026-01 | 2026-02-10 | 98.0
+6 | BBB | 2026-02 | 2026-03-10 | 97.0
+9 | CCC | 2026-01 | 2026-02-10 | 110.0
+12 | CCC | 2026-02 | 2026-03-10 | 111.0
+
+SIGNALS: month-over-month price changes
+AAA: as-of +1.98% (2026-02) | naive +5.83% (2026-03)
+BBB: as-of -1.02% (2026-02) | naive -5.15% (2026-03)
+CCC: as-of +0.91% (2026-02) | naive +1.82% (2026-02)
+
+SEPARATE SANITY REVIEW: not applied to the four-rule panel
+Row 1: yield -0.99% | negative yield (classroom flag)
+Row 4: yield -2.91% | negative yield (classroom flag)
+Row 5: yield +2.04% | none
+Row 6: yield +3.09% | none
+Row 9: yield -9.09% | negative yield (classroom flag); not priced below safer AAA; not priced below safer BBB
+Row 12: yield -9.91% | negative yield (classroom flag); not priced below safer AAA; not priced below safer BBB
+
+
+===== LATER-DATE PROBE =====
+Lab 16 fictional training data | Decision date: 2026-04-15
+Input rows: 12
+Quarantined: missing ticker: 1 row(s); row IDs: 11
+Removed: exact duplicate: 1 row(s); row IDs: 7
+Removed: publication after cutoff: 0 row(s); row IDs: none
+Removed: superseded vintage: 2 row(s); row IDs: 2, 12
+As-of panel: 8 row(s); row IDs: 1, 4, 3, 5, 6, 8, 9, 10
+
+AS-OF PANEL
+Row | Ticker | Month | Published | Price
+1 | AAA | 2026-01 | 2026-02-10 | 101.0
+4 | AAA | 2026-02 | 2026-03-25 | 103.0
+3 | AAA | 2026-03 | 2026-04-10 | 109.0
+5 | BBB | 2026-01 | 2026-02-10 | 98.0
+6 | BBB | 2026-02 | 2026-03-10 | 97.0
+8 | BBB | 2026-03 | 2026-04-10 | 92.0
+9 | CCC | 2026-01 | 2026-02-10 | 110.0
+10 | CCC | 2026-02 | 2026-04-05 | 112.0
+
+SIGNALS: month-over-month price changes
+AAA: as-of +5.83% (2026-03) | naive +5.83% (2026-03)
+BBB: as-of -5.15% (2026-03) | naive -5.15% (2026-03)
+CCC: as-of +1.82% (2026-02) | naive +1.82% (2026-02)
+
+SEPARATE SANITY REVIEW: not applied to the four-rule panel
+Row 1: yield -0.99% | negative yield (classroom flag)
+Row 4: yield -2.91% | negative yield (classroom flag)
+Row 3: yield -8.26% | negative yield (classroom flag)
+Row 5: yield +2.04% | none
+Row 6: yield +3.09% | none
+Row 8: yield +8.70% | none
+Row 9: yield -9.09% | negative yield (classroom flag); not priced below safer AAA; not priced below safer BBB
+Row 10: yield -10.71% | negative yield (classroom flag); not priced below safer AAA; not priced below safer BBB

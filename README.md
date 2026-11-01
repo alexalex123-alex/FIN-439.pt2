@@ -1,60 +1,44 @@
-# Lab 15 — start here
-
-Keep all files in this folder together. Lab 14's separate files were preserved.
+# Lab 16 — start here
 
 ## Files
 
 | File | Purpose |
 |---|---|
-| `portfolio.py` | Calculations, price estimates and 5-point allocation search; running it still prints Lab 14 baselines. |
-| `app.py` | Streamlit controls and results; imports all financial math from the engine. |
-| `prices.csv` | Actual adjusted month-end prices for BIL, IEF, LQD and VT. Do not edit to force an answer. |
-| `lab15.md` | Main submission: mandate, sources, flowchart, results, self-review and proposed decision. |
-| `requirements.txt` | Tested Streamlit version. |
-| `validation.txt` | Checks actually completed by the assistant. |
-| `README.md` | This setup and walkthrough guide. |
+| `asof.py` | Standard-library Python filter; editable data and cutoff at the top. |
+| `lab16.md` | Main write-up: concepts, results, worked yields, self-review and reflection. |
+| `output.txt` | Actual output for March 31 and April 15. |
+| `validation.txt` | Checks actually run by the assistant. |
+| `README.md` | This setup and submission guide. |
 
-## Start on this computer
+## Run on this computer
 
 Open PowerShell and paste:
 
 ```powershell
-& 'C:\Users\alxsc\Documents\Codex\2026-11-01\can-o\work\lab15\venv\Scripts\python.exe' -m streamlit run 'C:\Users\alxsc\Documents\Codex\2026-11-01\can-o\outputs\lab15\app.py'
+Set-Location -LiteralPath 'C:\Users\alxsc\Documents\Codex\2026-11-01\can-o\outputs\lab16'
+& 'C:\Users\alxsc\AppData\Local\Python\pythoncore-3.14-64\python.exe' asof.py
+& 'C:\Users\alxsc\AppData\Local\Python\pythoncore-3.14-64\python.exe' asof.py --decision-date 2026-04-15
 ```
 
-Dependencies are already installed in that local environment. If no browser opens, use the Local URL
-printed in the terminal, usually http://localhost:8501. Press Ctrl+C in the terminal to stop.
+On another computer with a working Python command, use `python asof.py` and
+`python asof.py --decision-date 2026-04-15`. No packages, installation step or API key are needed.
+The command-line probe leaves the default cutoff unchanged.
 
-## Start elsewhere
+## Walkthrough
 
-With Python installed, open a terminal in this folder:
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
-.\.venv\Scripts\python.exe -m streamlit run app.py
-```
-
-Do not upload `.venv` or `__pycache__` to GitHub.
-
-## Five-minute walkthrough
-
-1. The app opens in **Meridian training**, with target 6.5% and reserve 3%. Expect weights 0/20/25/55.
-2. Set global equity's return to 7%. Expect 0/10/10/80 and a 25-point change. Restore 8%.
-3. Choose **Northbridge funds**. Target starts at 5.5%; expect BIL 70%, VT 30%.
-4. Upload the supplied `prices.csv` to exercise the upload control; results should stay the same.
-5. Check **Use last 36 months**. Expect BIL 90%, VT 10% and a 20-point change.
-6. Uncheck it. Reduce VT's displayed return estimate by exactly 1.00 percentage point from the
-   unrounded default (subtract 1 from the field's underlying value). Expect BIL 65%, VT 35% and a
-   5-point change. Using 9.55% instead of the exact 9.5467689% produces the same grid allocation.
-7. Read `lab15.md`, review the proposed pilot decision, and finish its personal checklist.
-
-For the engine-only Lab 14 output, run `python portfolio.py` using your working interpreter.
-For the correlation proof, set both `CORRELATIONS[2][3]` and `[3][2]` in `portfolio.py` to 0.50,
-save, and refresh the Meridian app. Expect 0/40/0/60. Restore both to 0.25 afterward.
+1. Open `asof.py`: find `TABLE` and `DECISION_DATE` at the top.
+2. Follow `clean_records`, `asof_panel`, and `latest_vintages` in that order.
+3. Run the program. Compare the funnel and six retained row IDs against `output.txt`.
+4. Read `signals`: it compares adjacent observation months, not publication dates.
+5. Run the April 15 command. All three as-of signals should match the naive signals.
+6. Read the separate sanity review: chronology and financial plausibility are different checks.
+7. Review `lab16.md`: your comprehension answer is recorded. Complete the remaining personal checklist.
 
 ## Submit
 
-Upload these files to a `lab15` folder in your GitHub repository. Submit the direct file links requested
-by Brightspace; the main files are `lab15.md`, `portfolio.py`, `app.py`, and `prices.csv`.
-This package has not been uploaded to GitHub or submitted to Brightspace.
+Upload these five files to a separate `lab16` folder in your GitHub repository. The core submissions
+are `asof.py` and `lab16.md`; the other files supply run evidence and instructions. Submit the direct
+GitHub file links through the Lab 16 checkout in Brightspace. Do not upload `__pycache__`.
+
+The ZIP is a convenient download, not a substitute for the requested GitHub file links.
+No GitHub upload or Brightspace submission has been performed. Lab 17 is outside this package.

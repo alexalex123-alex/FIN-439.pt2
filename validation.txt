@@ -1,12 +1,9 @@
-PASS: Lab 14 command output remains byte-for-byte unchanged.
-PASS: Meridian baseline and equity stress match; largest change is 25 points.
-PASS: Engine correlation probe returns 0/40/0/60 and 9.73% volatility.
-PASS: Infeasible objective returns None; grid enumerates all 1,771 four-asset mixes.
-PASS: 60- and 36-return estimates agree with independent NumPy calculations.
-PASS: CSV duplicate month rejected.
-PASS: Streamlit Meridian page loads and editing equity to 7% displays a 25-point change.
-PASS: App responds to engine correlation changes; saved inputs restored.
-PASS: Self-review VT estimate reduction updates app allocation by 5 points.
-PASS: Streamlit fund page, 36-month switch and infeasible-objective warning work.
-PASS: all 244 saved price cells match raw Yahoo adjusted prices.
-PASS: actual Streamlit server started and health endpoint returned ok; server stopped after test.
+PASS: Four-rule funnel matches reference; every input row accounted for exactly once.
+PASS: All six signal values and their observation months match reference.
+PASS: April 15 as-of signals exactly equal naive signals for every ticker.
+PASS: Cutoff includes same-day publications; a not-yet-published revision cannot replace an older value.
+PASS: All six zero-coupon yields match; separate sanity review flags rows 1, 4, 9, 12.
+PASS: Empty/one-month panels and missing adjacent months return no fabricated signal.
+PASS: Conflicting same-date prices are refused instead of arbitrarily selected.
+PASS: Probes leave the saved March 31 cutoff and training inputs unchanged.
+PASS: Both command-line runs succeed; actual console results saved in output.txt.
