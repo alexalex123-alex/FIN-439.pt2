@@ -1,0 +1,7 @@
+PASS: all three baseline returns, volatilities and reserve weights match.
+PASS: symmetric correlation 0.50 gives benchmark volatility 11.00%.
+PASS: out of range input rejected: Correlation [2][3] must be between -1 and 1.
+PASS: asymmetric input rejected: Correlation table must be symmetric: [2][3].
+PASS: original mandate A-C match; D remains 100% cash and passes; E fails only reserve (0.0% versus 3.0%).
+PASS: only change to original mandate.py is the candidate E addition.
+PASS: original correlation inputs remain 0.25; probes changed copies only.
