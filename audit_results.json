@@ -1,0 +1,171 @@
+{
+  "download_date": "2026-11-01",
+  "start_date": "2020-01-01",
+  "comparisons": {
+    "BAA": {
+      "known_date": "2026-09-01",
+      "known_value": 6.47,
+      "current_date": "2026-09-01",
+      "current_value": 6.47,
+      "later_count": 0,
+      "revised_count": 0,
+      "overlap_count": 81
+    },
+    "FEDFUNDS": {
+      "known_date": "2026-09-01",
+      "known_value": 3.75,
+      "current_date": "2026-09-01",
+      "current_value": 3.75,
+      "later_count": 0,
+      "revised_count": 0,
+      "overlap_count": 81
+    },
+    "DGS10": {
+      "known_date": "2026-10-02",
+      "known_value": 5.28,
+      "current_date": "2026-10-29",
+      "current_value": 4.98,
+      "later_count": 18,
+      "revised_count": 0,
+      "overlap_count": 1690
+    },
+    "MORTGAGE30US": {
+      "known_date": "2026-10-01",
+      "known_value": 7.28,
+      "current_date": "2026-10-29",
+      "current_value": 7.24,
+      "later_count": 4,
+      "revised_count": 0,
+      "overlap_count": 353
+    },
+    "PAYEMS": {
+      "known_date": "2024-12-01",
+      "known_value": 159536.0,
+      "current_date": "2026-09-01",
+      "current_value": 159044.0,
+      "later_count": 21,
+      "revised_count": 59,
+      "overlap_count": 60,
+      "december2024_then": 159536,
+      "december2024_today": 158316.0
+    },
+    "CPIAUCSL_2026-10-31": {
+      "known_date": "2026-09-01",
+      "known_value": 336.298,
+      "current_date": "2026-09-01",
+      "current_value": 336.298,
+      "later_count": 0,
+      "revised_count": 0,
+      "overlap_count": 80
+    },
+    "CPIAUCSL_2026-11-01": {
+      "known_date": "2026-09-01",
+      "known_value": 336.298,
+      "current_date": "2026-09-01",
+      "current_value": 336.298,
+      "later_count": 0,
+      "revised_count": 0,
+      "overlap_count": 80
+    },
+    "CPIAUCSL_2026-10-05": {
+      "known_date": "2026-08-01",
+      "known_value": 334.131,
+      "current_date": "2026-09-01",
+      "current_value": 336.298,
+      "later_count": 1,
+      "revised_count": 0,
+      "overlap_count": 79
+    },
+    "CPIAUCSL_2025-01-15": {
+      "known_date": "2024-12-01",
+      "known_value": 317.685,
+      "current_date": "2026-09-01",
+      "current_value": 336.298,
+      "later_count": 20,
+      "revised_count": 60,
+      "overlap_count": 60
+    },
+    "CPIAUCSL_page_checks": {
+      "2026-07-01": 332.813,
+      "2026-08-01": 334.131,
+      "2026-09-01": 336.298
+    }
+  },
+  "downloads": {
+    "BAA_current": {
+      "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=BAA",
+      "source_column": "BAA",
+      "downloaded_at": "2026-11-01T19:03:23-05:00"
+    },
+    "BAA_2026-10-05": {
+      "url": "https://alfred.stlouisfed.org/graph/alfredgraph.csv?id=BAA&vintage_date=2026-10-05",
+      "source_column": "BAA_20261005",
+      "downloaded_at": "2026-11-01T19:03:23-05:00"
+    },
+    "FEDFUNDS_current": {
+      "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=FEDFUNDS",
+      "source_column": "FEDFUNDS",
+      "downloaded_at": "2026-11-01T19:03:23-05:00"
+    },
+    "FEDFUNDS_2026-10-05": {
+      "url": "https://alfred.stlouisfed.org/graph/alfredgraph.csv?id=FEDFUNDS&vintage_date=2026-10-05",
+      "source_column": "FEDFUNDS_20261005",
+      "downloaded_at": "2026-11-01T19:03:23-05:00"
+    },
+    "DGS10_current": {
+      "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+      "source_column": "DGS10",
+      "downloaded_at": "2026-11-01T19:03:23-05:00"
+    },
+    "DGS10_2026-10-05": {
+      "url": "https://alfred.stlouisfed.org/graph/alfredgraph.csv?id=DGS10&vintage_date=2026-10-05",
+      "source_column": "DGS10_20261005",
+      "downloaded_at": "2026-11-01T19:03:23-05:00"
+    },
+    "MORTGAGE30US_current": {
+      "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=MORTGAGE30US",
+      "source_column": "MORTGAGE30US",
+      "downloaded_at": "2026-11-01T19:03:24-05:00"
+    },
+    "MORTGAGE30US_2026-10-05": {
+      "url": "https://alfred.stlouisfed.org/graph/alfredgraph.csv?id=MORTGAGE30US&vintage_date=2026-10-05",
+      "source_column": "MORTGAGE30US_20261005",
+      "downloaded_at": "2026-11-01T19:03:24-05:00"
+    },
+    "PAYEMS_current": {
+      "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=PAYEMS",
+      "source_column": "PAYEMS",
+      "downloaded_at": "2026-11-01T19:03:24-05:00"
+    },
+    "PAYEMS_2025-01-15": {
+      "url": "https://alfred.stlouisfed.org/graph/alfredgraph.csv?id=PAYEMS&vintage_date=2025-01-15",
+      "source_column": "PAYEMS_20250115",
+      "downloaded_at": "2026-11-01T19:03:24-05:00"
+    },
+    "CPIAUCSL_current": {
+      "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=CPIAUCSL",
+      "source_column": "CPIAUCSL",
+      "downloaded_at": "2026-11-01T19:03:24-05:00"
+    },
+    "CPIAUCSL_2026-10-31": {
+      "url": "https://alfred.stlouisfed.org/graph/alfredgraph.csv?id=CPIAUCSL&vintage_date=2026-10-31",
+      "source_column": "CPIAUCSL_20261023",
+      "downloaded_at": "2026-11-01T19:03:24-05:00"
+    },
+    "CPIAUCSL_2026-11-01": {
+      "url": "https://alfred.stlouisfed.org/graph/alfredgraph.csv?id=CPIAUCSL&vintage_date=2026-11-01",
+      "source_column": "CPIAUCSL_20261023",
+      "downloaded_at": "2026-11-01T19:03:25-05:00"
+    },
+    "CPIAUCSL_2026-10-05": {
+      "url": "https://alfred.stlouisfed.org/graph/alfredgraph.csv?id=CPIAUCSL&vintage_date=2026-10-05",
+      "source_column": "CPIAUCSL_20261005",
+      "downloaded_at": "2026-11-01T19:03:25-05:00"
+    },
+    "CPIAUCSL_2025-01-15": {
+      "url": "https://alfred.stlouisfed.org/graph/alfredgraph.csv?id=CPIAUCSL&vintage_date=2025-01-15",
+      "source_column": "CPIAUCSL_20250115",
+      "downloaded_at": "2026-11-01T19:03:26-05:00"
+    }
+  }
+}

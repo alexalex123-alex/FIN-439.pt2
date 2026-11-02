@@ -1,9 +1,17 @@
-PASS: Four-rule funnel matches reference; every input row accounted for exactly once.
-PASS: All six signal values and their observation months match reference.
-PASS: April 15 as-of signals exactly equal naive signals for every ticker.
-PASS: Cutoff includes same-day publications; a not-yet-published revision cannot replace an older value.
-PASS: All six zero-coupon yields match; separate sanity review flags rows 1, 4, 9, 12.
-PASS: Empty/one-month panels and missing adjacent months return no fabricated signal.
-PASS: Conflicting same-date prices are refused instead of arbitrarily selected.
-PASS: Probes leave the saved March 31 cutoff and training inputs unchanged.
-PASS: Both command-line runs succeed; actual console results saved in output.txt.
+PASS: BAA October 5 vintage: 2026-09-01, 6.47.
+PASS: FEDFUNDS October 5 vintage: 2026-09-01, 3.75.
+PASS: DGS10 October 5 vintage: 2026-10-02, 5.28.
+PASS: MORTGAGE30US October 5 vintage: 2026-10-01, 7.28.
+PASS: PAYEMS December 2024 was 159,536 on January 15, 2025; current value is lower, with many revised dates.
+PASS: CPIAUCSL comparisons retrieved for October 31, November 1, October 5 and January 15, 2025.
+PASS: three CPIAUCSL observations match the independently opened FRED series page.
+PASS: Missing dots and blanks are excluded without forward fill or zero substitution.
+PASS: Earlier effective vintage is accepted; future vintage and mismatched series rejected.
+PASS: Revision count compares shared dates; new observations counted separately.
+PASS: Live app opens with four selected series, their charts and comparison table.
+PASS: All four October 5 reference values are displayed by the live app.
+PASS: App accepts typed PAYEMS and displays its historical value and nonzero revisions.
+PASS: CPIAUCSL works for both last-month-end and today.
+PASS: An unknown series shows its own error while the four valid series remain available.
+PASS: final app renders four Vega-Lite chart elements and comparison table.
+PASS: real Streamlit server health check returned ok; server stopped after test.
