@@ -1,79 +1,109 @@
-"""Run: python -m streamlit run app.py"""
-import copy
-import hashlib
-import io
+"""Run with: python -m streamlit run app.py"""
+import importlib.util
+import json
+import os
 from pathlib import Path
+from datetime import date
+import pandas as pd
 import streamlit as st
-import portfolio as engine
 
-st.set_page_config(page_title='Portfolio stability lab', layout='wide')
-st.title('Portfolio stability lab')
-st.caption('Built with AI help, a learning demonstration, not investment advice.')
+ROOT = Path(__file__).resolve().parent
+spec = importlib.util.spec_from_file_location('panel', ROOT / '.agents/skills/legend-panel/scripts/panel.py')
+panel = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(panel)
+edgar = panel.edgar
 
-mode = st.sidebar.radio('Universe', ['Meridian training', 'Northbridge funds'], key='universe')
-objective = st.sidebar.number_input('Objective return (%)', value=6.5 if mode == 'Meridian training' else 5.5,
-                                    step=0.1, key=f'objective_{mode}') / 100
-minimum = st.sidebar.number_input('Reserve minimum (%)', min_value=0.0, max_value=100.0,
-                                  value=3.0, step=1.0, key=f'minimum_{mode}') / 100
-uploaded = st.sidebar.file_uploader('Upload monthly adjusted prices (CSV)', type=['csv'])
-last36 = st.sidebar.checkbox('Use last 36 months', key='last36')
+st.set_page_config(page_title='Legend Panel', page_icon='📊', layout='wide')
+st.title('Legend Panel')
+st.caption(edgar.DISCLOSURE)
+st.write('One set of annual facts. Three investor lenses. Evidence before judgment.')
+with st.sidebar:
+    st.header('Company')
+    ticker = st.text_input('Ticker', 'COST').strip().upper()
+    as_of = st.date_input('Filing cutoff', date(2026, 11, 5))
+    threshold = st.number_input('Wood revenue growth threshold (%)', min_value=0.0, max_value=100.0, value=15.0, step=1.0)
+    st.caption('Set this to 5 for the COST probe; restore 15 for the saved screen.')
+    user_agent = st.text_input('SEC contact: your name and email', value=os.getenv('SEC_USER_AGENT', ''), type='password')
+    fetch = st.button('Download live SEC facts', type='primary')
+    st.caption('Contact information is sent to SEC and is not saved.')
+    st.divider()
+    st.write('Saved runs: COST, NVDA and JPM. NVIDIA is the largest company in VT in the dated Vanguard holdings used here.')
 
+if not edgar.re.fullmatch(r'[A-Z0-9.-]{1,12}', ticker):
+    st.error('Enter a valid ticker.')
+    st.stop()
+if fetch:
+    try:
+        with st.spinner('Downloading SEC facts…'):
+            edgar.download(ticker, user_agent, ROOT / 'reports/raw')
+        for investor in panel.INVESTORS:
+            st.session_state.pop(f'memo_{ticker}_{investor}', None)
+    except (ValueError, RuntimeError, OSError) as exc:
+        st.error(str(exc))
+
+raw_path = ROOT / 'reports/raw' / f'{ticker}_companyfacts.json'
+if not raw_path.exists():
+    st.info('Download this ticker to begin, or enter COST, NVDA or JPM for a saved run.')
+    st.stop()
 try:
-    if uploaded is not None:
-        raw = uploaded.getvalue()
-    elif mode == 'Northbridge funds':
-        raw = Path(__file__).with_name('prices.csv').read_bytes()
-    else:
-        raw = None
-    if raw is None:
-        loaded_assets = copy.deepcopy(engine.ASSETS)
-        correlations = engine.CORRELATIONS
-        active_assets = copy.deepcopy(loaded_assets)
-        scope = 'Meridian: course-authored training values'
-        identity = 'meridian'
-        if last36:
-            st.info('The 36-month switch applies to CSV data; Meridian uses fixed training inputs.')
-    else:
-        text = raw.decode('utf-8-sig')
-        loaded = engine.estimate_from_csv(io.StringIO(text))
-        active = engine.estimate_from_csv(io.StringIO(text), last36)
-        loaded_assets = loaded['assets']
-        active_assets = copy.deepcopy(active['assets'])
-        correlations = active['correlations']
-        identity = hashlib.sha256(raw).hexdigest()[:12] + str(last36)
-        scope = f"Historical estimates: {active['observations']} monthly returns, {active['first_return']} to {active['last_return']}"
-        st.caption('Only BIL is reserve-eligible by default. Adjust eligibility to match your mandate.')
-    st.subheader(scope)
-    st.write('Edit return estimates or reserve eligibility to test stability. The comparison keeps the original loaded inputs and all months, using the same objective and reserve minimum.')
-    for index, asset in enumerate(active_assets):
-        left, right = st.columns([3, 1])
-        asset['return'] = left.number_input(f"{asset['name']} expected return (%) — estimate" if raw else f"{asset['name']} expected return (%) — training",
-                                           value=float(asset['return'] * 100), step=0.1,
-                                           key=f'return_{identity}_{index}') / 100
-        asset['reserve'] = right.checkbox(f"{asset['name']}: reserve-eligible", value=asset['reserve'],
-                                          key=f'reserve_{identity}_{index}')
-    base_correlations = engine.CORRELATIONS if raw is None else loaded['correlations']
-    baseline = engine.search_portfolios(loaded_assets, base_correlations, objective, minimum)
-    current = engine.search_portfolios(active_assets, correlations, objective, minimum)
+    company, provenance = panel.load_snapshot(raw_path)
+    report = panel.analyze(company, ticker, as_of.isoformat(), provenance, threshold)
+except (ValueError, OSError) as exc:
+    st.error(str(exc))
+    st.stop()
+printed = panel.render_report(report)
+st.subheader(f"{report['company']} · {ticker}")
+st.caption(f"Snapshot retrieved {provenance.get('retrieved_at_utc', 'unknown')} · Filing cutoff {report['as_of']}")
+st.subheader('Investor × check')
+st.dataframe(pd.DataFrame(panel.panel_rows(report)), hide_index=True, width='stretch')
+st.caption(f"Revenue CAGR: {panel.pct(report['revenue_cagr_pct'])} · Latest R&D / revenue: {panel.pct(report['rows'][-1]['rd_pct'])} · Latest liabilities / equity: {panel.multiple(report['rows'][-1]['liabilities_equity'])}")
 
-    def show_result(title, result, assets):
-        st.subheader(title)
-        if result is None:
-            st.warning('No mix meets the objective')
-            return
-        st.table([{'Asset': asset['name'], 'Weight (%)': f'{weight * 100:.2f}'}
-                  for asset, weight in zip(assets, result['weights'])])
-        st.metric('Expected return', f"{result['expected_return']:.2%}")
-        st.metric('Volatility', f"{result['volatility']:.2%}")
-        st.metric('Reserve-eligible weight', f"{result['reserve']:.2%}")
+st.subheader('Investor verdicts and memos')
+meta_path = ROOT / 'reports' / f'{ticker}_memo_review.json'
+meta = json.loads(meta_path.read_text(encoding='utf-8')) if meta_path.exists() else {}
+if meta.get('evidence_sha256') != panel.evidence_hash(report):
+    st.warning('These saved memos have not been reviewed against the selected evidence and threshold. Review them before relying on their verdicts.')
+all_flags, missing = [], []
+for col, investor in zip(st.columns(3), panel.INVESTORS):
+    with col:
+        path = panel.memo_path(ticker, investor)
+        initial = path.read_text(encoding='utf-8') if path.exists() else ''
+        st.markdown(f'### {investor}')
+        memo = st.text_area(f'{investor} memo — edit to test the number guard', initial, height=320, key=f'memo_{ticker}_{investor}')
+        st.metric('Business verdict', panel.verdict(memo))
+        all_flags.extend([f"{investor}: {f['token']} (line {f['line']})" for f in edgar.unsupported_numbers(memo, printed)])
+        if not memo.strip():
+            missing.append(investor)
+        st.markdown(memo)
+        st.download_button(f'Download {investor} memo', memo, file_name=path.name, mime='text/markdown')
+if all_flags:
+    st.error('Unsupported numbers across memos: ' + '; '.join(all_flags))
+elif missing:
+    st.info('Memos still needed: ' + ', '.join(missing))
+else:
+    st.success('All three memos contain only numbers supported by the printed evidence. Review meaning and units too.')
+st.caption('Memos are AI-authored judgments saved from the skill workflow; the app does not call a model. Edits here affect this session; download them to retain your changes.')
 
-    first, second = st.columns(2)
-    with first:
-        show_result('As loaded — all months', baseline, loaded_assets)
-    with second:
-        show_result('Current inputs', current, active_assets)
-    change = engine.largest_weight_change(baseline, current)
-    st.metric('Largest weight change (percentage points)', 'N/A' if change is None else f'{change:.2f}')
-    st.caption('Search: long-only, fully funded, 5-percentage-point grid. A 3% reserve minimum requires at least 5% on this grid. Returns are estimates, not guarantees; the model does not verify turnover or future spending coverage.')
-except (ValueError, UnicodeError, OSError) as error:
-    st.error(f'Cannot use these inputs: {error}')
+frame = pd.DataFrame(report['rows'])
+chart = frame.set_index('fiscal_year_end')[['owner_earnings', 'net_income']] / 1_000_000
+chart.columns = ['Owner earnings', 'Net income']
+st.subheader('Cash generation and accounting profit')
+st.caption('USD millions; missing values remain gaps.')
+st.line_chart(chart)
+st.subheader('Five-year financials')
+display = []
+for row in report['rows']:
+    display.append({'Fiscal year end': row['fiscal_year_end'], **{
+        key.replace('_', ' ').title(): edgar.formatted(row[key], key == 'roe_pct')
+        for key in (*edgar.TAGS, 'roe_pct', 'owner_earnings', *panel.EXTRA_TAGS)},
+        'R&D / revenue': panel.pct(row['rd_pct']), 'Liabilities / equity': panel.multiple(row['liabilities_equity'])})
+st.caption('USD millions except percentages and liabilities / equity.')
+st.dataframe(pd.DataFrame(display), hide_index=True, width='stretch')
+st.download_button('Download printed evidence', printed, file_name=f'{ticker}_panel.md', mime='text/markdown')
+with st.expander('Source tags, filing accessions and calculations'):
+    st.markdown(printed)
+    st.json(provenance)
+with st.expander('Lab decision and student checkout'):
+    path = ROOT / 'LAB19.md'
+    if path.exists():
+        st.markdown(path.read_text(encoding='utf-8'))
